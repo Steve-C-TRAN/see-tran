@@ -1,9 +1,9 @@
 See-Tran — Open source transit technology benchmarking
 =======================================================
 
-See-Tran is an open-source platform for modeling transit agency technology landscapes and benchmarking across agencies. Transit professionals document which systems they use, enabling cross-agency comparison of vendors, products, and technology choices.
+See-Tran is an open-source platform for modeling transit agency technology and benchmarking across agencies. Transit professionals document which systems they use, enabling cross-agency comparison of vendors, products, and technology choices.
 
-**Who it's for:** Transit CIOs, IT managers, vendor managers, and analysts benchmarking capabilities and vendor presence across agencies.
+**Who it is for:** IT and operations managers, procurement managers, and analysts benchmarking capabilities and vendor presence across agencies.
 
 ---
 

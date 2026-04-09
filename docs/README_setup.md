@@ -62,7 +62,6 @@ After deploying, run these once (or include in a Railway release command):
 
 ```bash
 flask db upgrade    # Apply all migrations
-flask seed all      # Optional: load sample data
 ```
 
 ---
