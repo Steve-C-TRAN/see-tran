@@ -18,7 +18,7 @@ depends_on = None
 
 def upgrade():
     conn = op.get_bind()
-    inspector = inspect(conn)
+    inspector = sa.inspect(conn)
     existing = [c['name'] for c in inspector.get_unique_constraints('agencies')]
     
     if 'uq_transit_system_name' not in existing:
