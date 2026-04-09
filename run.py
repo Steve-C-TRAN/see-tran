@@ -4,7 +4,7 @@ from app.models import (
     Agency, FunctionalArea, Vendor, Component, Function,
     IntegrationPoint, UserRole, UpdateLog, Standard, TagGroup, Tag,
     Product, ProductVersion, Configuration, ConfigurationProduct,
-    ServiceType,
+    ServiceType, Suggestion,
 )
 import os
 import click
@@ -22,7 +22,7 @@ def make_shell_context():
         'TagGroup': TagGroup, 'Tag': Tag,
         'Product': Product, 'ProductVersion': ProductVersion,
         'Configuration': Configuration, 'ConfigurationProduct': ConfigurationProduct,
-        'ServiceType': ServiceType,
+        'ServiceType': ServiceType, 'Suggestion': Suggestion,
     }
 
 

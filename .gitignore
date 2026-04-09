@@ -40,7 +40,6 @@ instance/
 # SQLAlchemy
 *.sqlite
 *.sqlite3
-migrations/
 
 # Frontend
 node_modules/

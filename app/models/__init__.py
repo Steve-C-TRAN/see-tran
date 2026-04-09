@@ -4,7 +4,7 @@ from .tran import (
     IntegrationPoint, UserRole, UpdateLog, Standard, TagGroup, Tag,
     User, VerifiedAgencyDomain,
     Product, ProductVersion, Configuration, ConfigurationProduct, ConfigurationHistory,
-    ServiceType,
+    ServiceType, Suggestion,
 )
 
 __all__ = [
@@ -12,5 +12,5 @@ __all__ = [
     'IntegrationPoint', 'UserRole', 'UpdateLog', 'Standard', 'TagGroup', 'Tag',
     'User', 'VerifiedAgencyDomain',
     'Product', 'ProductVersion', 'Configuration', 'ConfigurationProduct', 'ConfigurationHistory',
-    'ServiceType',
+    'ServiceType', 'Suggestion',
 ]

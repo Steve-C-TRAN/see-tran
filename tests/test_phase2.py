@@ -1,250 +1,273 @@
-# tests/test_phase2_transit_systems.py
+# tests/test_phase2.py
 """
-Phase 2 Test Script - Transit Systems CRUD
-Run this after implementing Phase 2 Step 2.1 to verify transit systems CRUD works
-Usage: python tests/test_phase2_transit_systems.py
+Core model and route tests for the current domain model.
+Covers: Agency, Vendor, Component, Product, Configuration, Suggestion.
 """
 
-import sys
-import os
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
-
+import pytest
 from app import create_app, db
-from app.models.tran import TransitSystem
+from app.models.tran import (
+    Agency, Vendor, Component, Product, ProductVersion,
+    FunctionalArea, Function, Configuration, ConfigurationProduct,
+    ServiceType, Suggestion, Criticality, LifecycleStage,
+)
 
-def test_transit_systems_page(app):
-    """Test that transit systems page loads"""
-    try:
-        with app.test_client() as client:
-            response = client.get('/transit-systems')
-            assert response.status_code == 200
-            assert b'Transit Systems Management' in response.data
-            print("✓ Transit systems page loads correctly")
-        return True
-    except Exception as e:
-        print(f"✗ Transit systems page test failed: {e}")
-        return False
 
-def test_transit_systems_api_endpoints(app):
-    """Test transit systems API endpoints"""
-    try:
-        with app.test_client() as client:
-            # Test list endpoint
-            response = client.get('/api/transit-systems/list')
-            assert response.status_code == 200
-            print("✓ Transit systems list API works")
-            
-            # Test form endpoint
-            response = client.get('/api/transit-systems/form')
-            assert response.status_code == 200
-            assert b'Add Transit System' in response.data
-            print("✓ Transit systems form API works")
-            
-            # Test search functionality
-            response = client.get('/api/transit-systems/list?search=metro')
-            assert response.status_code == 200
-            print("✓ Transit systems search works")
-        
-        # Test details endpoint in separate context
-        first_system = TransitSystem.query.first()
-        if first_system:
-            with app.test_client() as client:
-                response = client.get(f'/api/transit-systems/{first_system.id}/details')
-                assert response.status_code == 200
-                print(f"✓ Transit system details API works (tested with {first_system.name})")
-                
-                response = client.get(f'/api/transit-systems/{first_system.id}/form')
-                assert response.status_code == 200
-                assert b'Edit Transit System' in response.data
-                print("✓ Transit system edit form API works")
-        
-        return True
-    except Exception as e:
-        print(f"✗ Transit systems API test failed: {e}")
-        return False
-
-def test_transit_systems_crud_operations(app):
-    """Test CRUD operations for transit systems"""
-    try:
-        # Clean up any existing test systems first
-        existing_test = TransitSystem.query.filter_by(name='Test Transit System').first()
-        if existing_test:
-            db.session.delete(existing_test)
-            db.session.commit()
-        
-        existing_updated = TransitSystem.query.filter_by(name='Updated Test Transit System').first()
-        if existing_updated:
-            db.session.delete(existing_updated)
-            db.session.commit()
-        
-        # Test CREATE
-        with app.test_client() as client:
-            response = client.post('/api/transit-systems', data={
-                'name': 'Test Transit System',
-                'location': 'Test City, ST',
-                'description': 'A test transit system for Phase 2 testing'
-            })
-            assert response.status_code == 200
-            assert b'created successfully' in response.data
-            print("✓ Transit system CREATE works")
-        
-        # Find the created system
-        test_system = TransitSystem.query.filter_by(name='Test Transit System').first()
-        assert test_system is not None, "Created transit system not found in database"
-        print(f"✓ Created transit system found in database (ID: {test_system.id})")
-        
-        # Test UPDATE
-        with app.test_client() as client:
-            response = client.put(f'/api/transit-systems/{test_system.id}', data={
-                'name': 'Updated Test Transit System',
-                'location': 'Updated City, ST',
-                'description': 'Updated description'
-            })
-            assert response.status_code == 200
-            assert b'updated successfully' in response.data
-            print("✓ Transit system UPDATE works")
-        
-        # Verify update in database
-        db.session.refresh(test_system)
-        assert test_system.name == 'Updated Test Transit System'
-        print("✓ Update reflected in database")
-        
-        # Test DELETE
-        with app.test_client() as client:
-            response = client.delete(f'/api/transit-systems/{test_system.id}')
-            assert response.status_code == 200
-            assert b'deleted successfully' in response.data
-            print("✓ Transit system DELETE works")
-        
-        # Verify deletion (suppress SQLAlchemy 2.0 warning)
-        import warnings
-        with warnings.catch_warnings():
-            warnings.simplefilter("ignore")
-            deleted_system = TransitSystem.query.get(test_system.id)
-        assert deleted_system is None
-        print("✓ Deletion reflected in database")
-        
-        return True
-    except Exception as e:
-        print(f"✗ Transit systems CRUD test failed: {e}")
-        return False
-
-def test_error_handling(app):
-    """Test error handling in transit systems routes"""
-    try:
-        with app.test_client() as client:
-            # Test empty name validation
-            response = client.post('/api/transit-systems', data={
-                'name': '',  # Empty name should fail
-                'location': 'Test City'
-            })
-            assert response.status_code == 200
-            assert b'required' in response.data.lower()
-            print("✓ Empty name validation works")
-            
-            # Test invalid ID for details - accept either 404 or error fragment
-            response = client.get('/api/transit-systems/99999/details')
-            if response.status_code == 404:
-                print("✓ Invalid ID handling works")
-            elif response.status_code == 200 and b'error' in response.data.lower():
-                print("✓ Invalid ID handling works")
-            else:
-                print(f"✗ Unexpected response for invalid ID: {response.status_code}")
-                return False
-            
-            # Test invalid ID for update
-            response = client.put('/api/transit-systems/99999', data={'name': 'Test Update'})
-            if response.status_code == 404 or (response.status_code == 200 and b'error' in response.data.lower()):
-                print("✓ Invalid ID update handling works")
-            else:
-                print(f"✗ Unexpected response for invalid ID update: {response.status_code}")
-                return False
-            
-            # Test invalid ID for delete
-            response = client.delete('/api/transit-systems/99999')
-            if response.status_code == 404 or (response.status_code == 200 and b'error' in response.data.lower()):
-                print("✓ Invalid ID delete handling works")
-            else:
-                print(f"✗ Unexpected response for invalid ID delete: {response.status_code}")
-                return False
-        
-        return True
-    except Exception as e:
-        print(f"✗ Error handling test failed: {e}")
-        return False
-
-def test_template_fragments(app):
-    """Test that template fragments render correctly"""
-    try:
-        from flask import render_template
-        
-        # Test list fragment
-        transit_systems = TransitSystem.query.limit(3).all()
-        html = render_template('fragments/transit_system_list.html', 
-                             transit_systems=transit_systems)
-        assert 'transit-system-card' in html
-        print("✓ Transit system list fragment renders")
-        
-        # Test form fragment
-        html = render_template('fragments/transit_system_form.html', 
-                             transit_system=None)
-        assert 'Add Transit System' in html
-        print("✓ Transit system form fragment renders")
-        
-        # Test details fragment (if we have systems)
-        if transit_systems:
-            html = render_template('fragments/transit_system_details.html', 
-                                 transit_system=transit_systems[0])
-            assert transit_systems[0].name in html
-            print("✓ Transit system details fragment renders")
-        
-        return True
-    except Exception as e:
-        print(f"✗ Template fragments test failed: {e}")
-        return False
-
-def run_tests():
-    """Run all Phase 2 Transit Systems tests"""
-    print("Testing Phase 2 - Transit Systems CRUD...")
-    print("=" * 60)
-    
-    app = create_app()
-    
-    tests = [
-        ("Transit Systems Page", lambda: test_transit_systems_page(app)),
-        ("API Endpoints", lambda: test_transit_systems_api_endpoints(app)),
-        ("CRUD Operations", lambda: test_transit_systems_crud_operations(app)),
-        ("Error Handling", lambda: test_error_handling(app)),
-        ("Template Fragments", lambda: test_template_fragments(app))
-    ]
-    
-    passed = 0
+@pytest.fixture
+def app():
+    app = create_app({
+        "TESTING": True,
+        "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",
+        "SECRET_KEY": "test",
+        "WTF_CSRF_ENABLED": False,
+    })
     with app.app_context():
-        for test_name, test_func in tests:
-            print(f"\n--- {test_name} ---")
-            try:
-                if test_func():
-                    passed += 1
-                    print(f"✅ {test_name}: PASSED")
-                else:
-                    print(f"❌ {test_name}: FAILED")
-            except Exception as e:
-                print(f"❌ {test_name}: ERROR - {e}")
-    
-    print("\n" + "=" * 60)
-    print(f"Results: {passed}/{len(tests)} tests passed")
-    
-    if passed == len(tests):
-        print("🎉 Phase 2 Step 2.1 - Transit Systems CRUD is ready!")
-        print("✅ Full page template created")
-        print("✅ Template fragments working (no more HTML in routes!)")
-        print("✅ Complete CRUD operations implemented")
-        print("✅ Error handling and validation working")
-        print("✅ Ready for Step 2.2: Functional Areas Management")
-    else:
-        print("❌ Some tests failed - check implementation")
-    
-    return passed == len(tests)
+        db.create_all()
+        yield app
+        db.drop_all()
 
-if __name__ == "__main__":
-    run_tests()
+
+@pytest.fixture
+def client(app):
+    return app.test_client()
+
+
+@pytest.fixture
+def seed_data(app):
+    """Seed a minimal set of related records for testing. Returns IDs to avoid detached instance errors."""
+    with app.app_context():
+        agency = Agency(name="Test Transit Agency", location="Portland, OR", short_name="tta")
+        vendor = Vendor(name="Test Vendor Co", website="https://testvendor.example.com")
+        fa = FunctionalArea(name="Operations", description="Day-to-day transit operations")
+        db.session.add_all([agency, vendor, fa])
+        db.session.flush()
+
+        func = Function(name="Scheduling", functional_area_id=fa.id, criticality=Criticality.high)
+        comp = Component(name="CAD/AVL", description="Computer-aided dispatch and automatic vehicle location")
+        db.session.add_all([func, comp])
+        db.session.flush()
+
+        func.components.append(comp)
+
+        product = Product(name="TestCAD Pro", vendor_id=vendor.id, lifecycle_stage=LifecycleStage.production)
+        db.session.add(product)
+        db.session.flush()
+
+        pv = ProductVersion(product_id=product.id, version="3.1.0")
+        db.session.add(pv)
+        db.session.flush()
+
+        config = Configuration(
+            agency_id=agency.id,
+            function_id=func.id,
+            component_id=comp.id,
+            status="Active",
+        )
+        db.session.add(config)
+        db.session.flush()
+
+        cp = ConfigurationProduct(
+            configuration_id=config.id,
+            product_id=product.id,
+            product_version_id=pv.id,
+        )
+        db.session.add(cp)
+
+        st = ServiceType(name="Fixed")
+        db.session.add(st)
+        db.session.flush()
+        config.service_types.append(st)
+
+        db.session.commit()
+
+        return {
+            "agency_id": agency.id,
+            "vendor_id": vendor.id,
+            "fa_id": fa.id,
+            "func_id": func.id,
+            "comp_id": comp.id,
+            "product_id": product.id,
+            "pv_id": pv.id,
+            "config_id": config.id,
+            "service_type_id": st.id,
+        }
+
+
+# =========================================================================
+# Model tests
+# =========================================================================
+
+class TestModels:
+    def test_agency_creation(self, app):
+        with app.app_context():
+            a = Agency(name="Metro Transit", location="Minneapolis, MN")
+            db.session.add(a)
+            db.session.commit()
+            assert a.id is not None
+            assert Agency.query.filter_by(name="Metro Transit").first() is not None
+
+    def test_agency_unique_name(self, app):
+        with app.app_context():
+            db.session.add(Agency(name="UniqueAgency"))
+            db.session.commit()
+            db.session.add(Agency(name="UniqueAgency"))
+            with pytest.raises(Exception):
+                db.session.commit()
+            db.session.rollback()
+
+    def test_vendor_creation(self, app):
+        with app.app_context():
+            v = Vendor(name="Cubic", website="https://cubic.com")
+            db.session.add(v)
+            db.session.commit()
+            assert v.id is not None
+
+    def test_product_lifecycle(self, app):
+        with app.app_context():
+            v = Vendor(name="Acme")
+            db.session.add(v)
+            db.session.flush()
+            p = Product(name="Widget", vendor_id=v.id, lifecycle_stage=LifecycleStage.pilot)
+            db.session.add(p)
+            db.session.commit()
+            assert p.lifecycle_stage == LifecycleStage.pilot
+
+    def test_product_version_unique_constraint(self, app):
+        with app.app_context():
+            v = Vendor(name="DupTest")
+            db.session.add(v)
+            db.session.flush()
+            p = Product(name="DupProd", vendor_id=v.id)
+            db.session.add(p)
+            db.session.flush()
+            db.session.add(ProductVersion(product_id=p.id, version="1.0"))
+            db.session.commit()
+            db.session.add(ProductVersion(product_id=p.id, version="1.0"))
+            with pytest.raises(Exception):
+                db.session.commit()
+            db.session.rollback()
+
+    def test_configuration_unique_constraint(self, app, seed_data):
+        with app.app_context():
+            dup = Configuration(
+                agency_id=seed_data["agency_id"],
+                function_id=seed_data["func_id"],
+                component_id=seed_data["comp_id"],
+            )
+            db.session.add(dup)
+            with pytest.raises(Exception):
+                db.session.commit()
+            db.session.rollback()
+
+    def test_configuration_service_types(self, app, seed_data):
+        with app.app_context():
+            config = Configuration.query.first()
+            assert len(config.service_types) == 1
+            assert config.service_types[0].name == "Fixed"
+
+    def test_configuration_products(self, app, seed_data):
+        with app.app_context():
+            config = Configuration.query.first()
+            assert len(config.products) == 1
+            cp = config.products[0]
+            assert cp.product.name == "TestCAD Pro"
+            assert cp.product_version.version == "3.1.0"
+
+    def test_function_component_m2m(self, app, seed_data):
+        with app.app_context():
+            func = Function.query.filter_by(name="Scheduling").first()
+            assert len(func.components) == 1
+            assert func.components[0].name == "CAD/AVL"
+
+
+# =========================================================================
+# Suggestion model tests
+# =========================================================================
+
+class TestSuggestionModel:
+    def test_create_suggestion(self, app, seed_data):
+        with app.app_context():
+            s = Suggestion(
+                entity_type="agency",
+                entity_id=seed_data["agency_id"],
+                field="website",
+                suggested_value="https://new-website.example.com",
+                current_value=None,
+                confidence=0.92,
+            )
+            db.session.add(s)
+            db.session.commit()
+            assert s.id is not None
+            assert s.status == "pending"
+
+    def test_suggestion_status_filter(self, app, seed_data):
+        with app.app_context():
+            aid = seed_data["agency_id"]
+            for i, status in enumerate(["pending", "pending", "accepted", "rejected"]):
+                s = Suggestion(
+                    entity_type="agency", entity_id=aid,
+                    field=f"field_{i}", suggested_value=f"val_{i}",
+                    status=status,
+                )
+                db.session.add(s)
+            db.session.commit()
+            assert Suggestion.query.filter_by(status="pending").count() == 2
+            assert Suggestion.query.filter_by(status="accepted").count() == 1
+            assert Suggestion.query.filter_by(status="rejected").count() == 1
+
+
+# =========================================================================
+# Route tests — internal API (existing HTMX/fragment routes)
+# =========================================================================
+
+class TestInternalRoutes:
+    def test_health_check(self, client):
+        resp = client.get("/api/health")
+        assert resp.status_code == 200
+        data = resp.get_json()
+        assert data["ok"] is True
+
+    def test_index_page(self, client):
+        resp = client.get("/")
+        assert resp.status_code == 200
+
+    def test_count_endpoints(self, client, seed_data):
+        for entity in ("agencies", "vendors", "components", "configurations", "products"):
+            resp = client.get(f"/api/count/{entity}")
+            assert resp.status_code == 200, f"/api/count/{entity} returned {resp.status_code}"
+
+    def test_agencies_list_fragment(self, client, seed_data):
+        resp = client.get("/api/agencies/list")
+        assert resp.status_code == 200
+
+    def test_vendors_list_fragment(self, client, seed_data):
+        resp = client.get("/api/vendors/list")
+        assert resp.status_code == 200
+
+    def test_components_list_fragment(self, client, seed_data):
+        resp = client.get("/api/components/list")
+        assert resp.status_code == 200
+
+    def test_vendor_stats(self, client, seed_data):
+        resp = client.get("/api/vendors/stats")
+        assert resp.status_code == 200
+
+    def test_agency_details_fragment(self, client, seed_data):
+        with client.application.app_context():
+            a = Agency.query.first()
+        resp = client.get(f"/api/agencies/{a.id}/details")
+        assert resp.status_code == 200
+
+    def test_component_details_fragment(self, client, seed_data):
+        with client.application.app_context():
+            c = Component.query.first()
+        resp = client.get(f"/api/components/{c.id}/details")
+        assert resp.status_code == 200
+
+    def test_configurations_list_requires_login(self, client, seed_data):
+        resp = client.get("/api/configurations/list")
+        assert resp.status_code == 401  # API returns 401 when not logged in
+
+    def test_configurations_page_requires_login(self, client, seed_data):
+        resp = client.get("/configurations")
+        assert resp.status_code == 302  # page redirects to login

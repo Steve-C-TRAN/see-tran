@@ -21,6 +21,7 @@ from app import create_app, db
 from app.models.tran import (
     Agency, Vendor, Component, Product, ProductVersion,
     Function, FunctionalArea, Configuration, ConfigurationProduct,
+    Suggestion,
 )
 
 try:
@@ -62,6 +63,7 @@ def get_schema_summary() -> dict:
         "FunctionalArea": _cols(FunctionalArea),
         "Configuration": _cols(Configuration),
         "ConfigurationProduct": _cols(ConfigurationProduct),
+        "Suggestion": _cols(Suggestion),
     }
 
 
@@ -476,6 +478,86 @@ def upsert_configuration(
 
         db.session.commit()
         return {"id": c.id, "created": created, "updated_fields": updated}
+
+
+# ---------------------------------------------------------------------------
+# Suggestion
+# ---------------------------------------------------------------------------
+
+@mcp.tool()
+def list_suggestions(
+    status: str = "pending",
+    entity_type: str = "",
+    limit: int = 50,
+) -> list[dict]:
+    """List suggestions, filtered by status and/or entity type.
+
+    Args:
+        status: Filter by status: pending, accepted, rejected, or 'all'.
+        entity_type: Filter by entity type (e.g. 'agency', 'vendor').
+        limit: Max records to return.
+    """
+    with flask_app.app_context():
+        q = Suggestion.query
+        if status and status != "all":
+            q = q.filter_by(status=status)
+        if entity_type:
+            q = q.filter_by(entity_type=entity_type)
+        rows = q.order_by(Suggestion.created_at.desc()).limit(limit).all()
+        return [
+            {
+                "id": s.id,
+                "entity_type": s.entity_type,
+                "entity_id": s.entity_id,
+                "field": s.field,
+                "suggested_value": s.suggested_value,
+                "current_value": s.current_value,
+                "confidence": s.confidence,
+                "status": s.status,
+                "source_url": s.source_url,
+                "created_at": s.created_at.isoformat() if s.created_at else None,
+            }
+            for s in rows
+        ]
+
+
+@mcp.tool()
+def create_suggestion(
+    entity_type: str,
+    entity_id: int,
+    field: str,
+    suggested_value: str,
+    current_value: str = "",
+    source_url: str = "",
+    confidence: float = 0.0,
+) -> dict:
+    """Create a new suggestion for human review.
+
+    Args:
+        entity_type: Type of entity (agency, vendor, component, product).
+        entity_id: Database ID of the entity.
+        field: Field name to update.
+        suggested_value: The proposed new value.
+        current_value: The current value (for diff display).
+        source_url: URL where the information was found.
+        confidence: Confidence score 0.0-1.0.
+
+    Returns:
+        {"id": ..., "status": "pending"}
+    """
+    with flask_app.app_context():
+        s = Suggestion(
+            entity_type=entity_type,
+            entity_id=entity_id,
+            field=field,
+            suggested_value=suggested_value,
+            current_value=current_value,
+            source_url=source_url or None,
+            confidence=confidence,
+        )
+        db.session.add(s)
+        db.session.commit()
+        return {"id": s.id, "status": s.status}
 
 
 # ---------------------------------------------------------------------------

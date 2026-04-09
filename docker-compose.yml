@@ -1,0 +1,33 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: seetran
+      POSTGRES_USER: seetran
+      POSTGRES_PASSWORD: seetran
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U seetran"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      SECRET_KEY: dev-secret-change-me
+      DB_TYPE: postgres
+      DATABASE_URL: postgresql://seetran:seetran@db:5432/seetran
+      CLAUDE_API_KEY: ${CLAUDE_API_KEY:-}
+      FLASK_ENV: development
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./logs:/app/logs
+
+volumes:
+  pg_data:

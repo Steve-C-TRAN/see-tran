@@ -457,6 +457,38 @@ class ConfigurationProduct(db.Model):
     def __repr__(self):
         return f"<ConfigurationProduct(configuration_id={self.configuration_id}, product_id={self.product_id}, version_id={self.product_version_id})>"
 
+class Suggestion(db.Model):
+    """Agent-generated suggestions for human review.
+
+    Agents write proposed field changes here instead of directly modifying
+    entities. Admins review via /admin/suggestions and accept or reject.
+    """
+    __tablename__ = 'suggestions'
+
+    id = db.Column(db.Integer, primary_key=True)
+    entity_type = db.Column(db.String(50), nullable=False, index=True)  # e.g. 'agency', 'vendor', 'component'
+    entity_id = db.Column(db.Integer, nullable=False, index=True)
+    field = db.Column(db.String(100), nullable=False)
+    suggested_value = db.Column(db.Text)
+    current_value = db.Column(db.Text)
+    source_url = db.Column(db.String(512))
+    confidence = db.Column(db.Float)
+    status = db.Column(db.String(20), default='pending', nullable=False, index=True)  # pending, accepted, rejected
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    reviewed_at = db.Column(db.DateTime)
+    reviewed_by_user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    reviewed_by = db.relationship('User', foreign_keys=[reviewed_by_user_id])
+    review_note = db.Column(db.String(500))
+
+    __table_args__ = (
+        db.Index('ix_suggestion_entity', 'entity_type', 'entity_id'),
+        db.Index('ix_suggestion_status_created', 'status', 'created_at'),
+    )
+
+    def __repr__(self):
+        return f"<Suggestion(entity_type={self.entity_type}, entity_id={self.entity_id}, field={self.field}, status={self.status})>"
+
+
 class ConfigurationHistory(db.Model):
     __tablename__ = 'configuration_history'
     id = db.Column(db.Integer, primary_key=True)

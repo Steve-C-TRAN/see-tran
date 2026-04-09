@@ -232,42 +232,45 @@ Add `subscription_tier` to `VendorUser` and `User`. Gate features in route decor
 
 ---
 
-### Phase 4 — Public Release Features
+### Phase 4 — Public Release Features (Complete)
+
+> **Verification notes (2026-04-04):**
+> - 4.1: Public read API at `/api/v1/` with paginated endpoints for agencies, vendors, components, functions, configurations. Eager-loaded relationships for detail endpoints. All unauthenticated. Blueprint: `app/routes/api_v1.py` ��
+> - 4.2: Unified search at `GET /api/v1/search?q=<term>&type=<entity>` — searches across agency, vendor, component, product, function, configuration using ILIKE. No FTS5 needed at current scale ✓
+> - 4.3: `Suggestion` model added to `app/models/tran.py`. Admin reviewer UI at `/admin/suggestions` with accept/reject/batch actions + JS. MCP tools: `list_suggestions`, `create_suggestion`. Admin dashboard updated with link ✓
+> - 4.4: `CONTRIBUTING.md` created with local setup, testing, seeding, agent usage, code conventions, PR guidelines, data quality standards ✓
+> - Tests: All 3 stale test files (referencing `TransitSystem`, `AgencyFunctionImplementation`) rewritten for current models. 88 tests passing ✓
 
 **4.1 — Public Read API**
 
-Add unauthenticated read-only JSON endpoints:
+Unauthenticated read-only JSON endpoints at `/api/v1/`:
 ```
-GET /api/v1/agencies        → paginated agency list
-GET /api/v1/agencies/<id>   → agency detail + configurations
-GET /api/v1/vendors         → vendor list
-GET /api/v1/components      → component list
-GET /api/v1/functions       → function taxonomy
+GET /api/v1/agencies             → paginated agency list (search, page, per_page)
+GET /api/v1/agencies/<id>        → agency detail + configurations + products
+GET /api/v1/vendors              → paginated vendor list
+GET /api/v1/vendors/<id>         → vendor detail + products + versions
+GET /api/v1/components           → paginated component list
+GET /api/v1/components/<id>      → component detail + functions
+GET /api/v1/functions            → function taxonomy grouped by functional area
+GET /api/v1/functions/<id>       → single function detail
+GET /api/v1/configurations       → filterable by agency_id, component_id, function_id, status
+GET /api/v1/configurations/<id>  → configuration detail + products + service types
 ```
-
-Document in `docs/api.md`. This enables third-party integrations and makes the data accessible to other tools.
 
 **4.2 — Search**
 
-Add `flask-sqlalchemy` full-text search or a lightweight SQLite FTS5 table for:
-- Components by name/description
-- Vendors and products
-- Configurations by notes
-
-Single `/api/search?q=<term>&type=<entity>` endpoint. No Elasticsearch needed at this scale.
+`GET /api/v1/search?q=<term>&type=<entity>` — unified cross-entity search using ILIKE on name/description fields. Supports comma-separated type filtering. Min 2 char query.
 
 **4.3 — Reviewer UI**
 
-Admin page at `/admin/suggestions` that lists pending `Suggestion` records. Allow accept/reject/modify with a note. Batch actions for high-volume agent runs.
+- `Suggestion` model: entity_type, entity_id, field, suggested_value, current_value, source_url, confidence, status (pending/accepted/rejected), review_note
+- Admin page at `/admin/suggestions` with status filter tabs, batch accept/reject, pagination
+- MCP tools: `list_suggestions(status, entity_type, limit)`, `create_suggestion(entity_type, entity_id, field, suggested_value, ...)`
+- Accept action applies suggested_value to the entity field automatically
 
 **4.4 — Contributing Workflow**
 
-Add `CONTRIBUTING.md` covering:
-- How to run locally
-- How to seed data
-- How to run agents
-- PR conventions
-- Data quality standards (from `README_agents.md`)
+`CONTRIBUTING.md` at repo root covers: local setup, testing, seeding, agents, project structure, code conventions, public API docs, PR guidelines, data quality standards.
 
 ---
 
