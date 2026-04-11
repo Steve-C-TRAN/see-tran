@@ -12,16 +12,12 @@ class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY')
     DEBUG = False
 
-    # Database — use DATABASE_URL if set (Railway injects this automatically),
-    # otherwise fall back to local SQLite for development.
-    _db_url = os.environ.get('DATABASE_URL')
-    if _db_url:
-        # SQLAlchemy 2.x requires postgresql://, Railway may provide postgres://
-        if _db_url.startswith('postgres://'):
-            _db_url = _db_url.replace('postgres://', 'postgresql://', 1)
-        SQLALCHEMY_DATABASE_URI = _db_url
-    else:
-        SQLALCHEMY_DATABASE_URI = f"sqlite:///{os.path.join(basedir, 'instance', 'app.db')}"
+    # DATABASE_URL takes priority (Railway injects it automatically).
+    # Falls back to local SQLite. The .replace() is a no-op on non-postgres URLs.
+    SQLALCHEMY_DATABASE_URI = os.environ.get(
+        'DATABASE_URL',
+        f"sqlite:///{os.path.join(basedir, 'instance', 'app.db')}"
+    ).replace('postgres://', 'postgresql://', 1)
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
