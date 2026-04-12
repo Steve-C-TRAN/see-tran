@@ -438,13 +438,5 @@ function logMessage(message, type = 'info') {
   executionLog.scrollTop = executionLog.scrollHeight;
 }
 
-// Toast helper (if not defined globally)
-function showToast(message, success) {
-  if (window.showToast) {
-    window.showToast(message, success);
-    return;
-  }
-  alert(message);
-}
 </script>
 {% endblock %}
