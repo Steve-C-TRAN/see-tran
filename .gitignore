@@ -7,6 +7,9 @@ prompts/
 combined.txt
 setup.sh 
 scripts/
+!scripts/
+scripts/*
+!scripts/start_web.sh
 .venv/
 
 # Python

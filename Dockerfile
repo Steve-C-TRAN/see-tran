@@ -24,4 +24,4 @@ ENV PORT=8000
 
 EXPOSE 8000
 # Start web server directly; run migrations separately as a one-off task/job
-CMD echo BOOT source=Dockerfile && echo BOOT launch_gunicorn PORT=$PORT FLASK_ENV=$FLASK_ENV && exec gunicorn --workers 1 --bind 0.0.0.0:$PORT --timeout 120 --log-level info --access-logfile - --error-logfile - --capture-output run:app
+CMD ["sh", "scripts/start_web.sh"]
