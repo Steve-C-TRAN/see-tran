@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, redirect, url_for, request
 from app import db
 from app.models.tran import Agency
 from app.forms.forms import AgencyForm
+from app.auth import admin_required
 
 agency_bp = Blueprint('agency', __name__, url_prefix='/agencies')
 
@@ -15,6 +16,7 @@ def index(page=1):
 
 
 @agency_bp.route('/new', methods=['POST'])
+@admin_required
 def add_agency():
     """Create a new agency (form POST, redirects on success)."""
     form = AgencyForm()

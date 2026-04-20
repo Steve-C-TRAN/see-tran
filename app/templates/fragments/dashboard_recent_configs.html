@@ -1,0 +1,55 @@
+<!-- fragments/dashboard_recent_configs.html -->
+{% if configs %}
+  {% for c in configs %}
+  <a href="{{ url_for('configurations.configuration_detail_page', config_id=c.id) }}"
+     class="flex items-start px-6 py-4 hover:bg-slate-700/30 transition-colors group">
+    <!-- Status dot -->
+    <div class="flex-shrink-0 mt-1 mr-3">
+      {% if c.status == 'Active' %}
+        <div class="w-2 h-2 rounded-full bg-green-500 mt-0.5"></div>
+      {% elif c.status == 'Draft' %}
+        <div class="w-2 h-2 rounded-full bg-yellow-500 mt-0.5"></div>
+      {% elif c.status == 'Archived' %}
+        <div class="w-2 h-2 rounded-full bg-slate-500 mt-0.5"></div>
+      {% else %}
+        <div class="w-2 h-2 rounded-full bg-slate-600 mt-0.5"></div>
+      {% endif %}
+    </div>
+
+    <!-- Main content -->
+    <div class="flex-1 min-w-0">
+      <div class="flex items-center justify-between gap-2">
+        <p class="text-sm font-medium text-slate-200 group-hover:text-white truncate">
+          {{ c.agency.name if c.agency else '—' }}
+        </p>
+        <span class="text-xs text-slate-500 flex-shrink-0">
+          {% if c.created_at %}
+            {{ c.created_at.strftime('%b %-d') }}
+          {% endif %}
+        </span>
+      </div>
+      <p class="text-xs text-slate-400 truncate mt-0.5">
+        {{ c.function.name if c.function else '—' }}
+        {% if c.component %}
+          <span class="text-slate-600 mx-1">·</span>{{ c.component.name }}
+        {% endif %}
+      </p>
+      {% if c.products %}
+      <p class="text-xs text-slate-500 truncate mt-0.5">
+        {{ c.products | map(attribute='product') | map(attribute='name') | select | list | join(', ') }}
+      </p>
+      {% endif %}
+    </div>
+
+    <!-- Arrow -->
+    <svg class="w-4 h-4 text-slate-600 group-hover:text-slate-400 flex-shrink-0 ml-2 mt-0.5 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+    </svg>
+  </a>
+  {% endfor %}
+{% else %}
+  <div class="px-6 py-10 text-center">
+    <p class="text-slate-400 text-sm">No configurations yet.</p>
+    <a href="/configurations" class="mt-2 inline-block text-xs text-blue-400 hover:text-blue-300">Browse configurations →</a>
+  </div>
+{% endif %}

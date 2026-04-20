@@ -1,0 +1,32 @@
+<!-- fragments/dashboard_top_agencies.html -->
+{% if rows %}
+<div class="divide-y divide-slate-700/40">
+  {% for agency, cfg_count in rows %}
+  <a href="{{ url_for('agency.index') }}?id={{ agency.id }}"
+     class="flex items-center justify-between px-5 py-3 hover:bg-slate-700/30 transition-colors group">
+    <div class="flex items-center gap-3 min-w-0">
+      <!-- Agency logo / initials -->
+      {% if agency.short_name %}
+        <img src="{{ url_for('static', filename='images/' + agency.short_name + '_logo.png') }}"
+             alt="{{ agency.name }}"
+             class="w-6 h-6 object-contain rounded flex-shrink-0"
+             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+        <div class="w-6 h-6 rounded bg-slate-700 flex items-center justify-center flex-shrink-0 text-xs font-bold text-slate-300" style="display:none">
+          {{ agency.name[0].upper() }}
+        </div>
+      {% else %}
+        <div class="w-6 h-6 rounded bg-slate-700 flex items-center justify-center flex-shrink-0 text-xs font-bold text-slate-300">
+          {{ agency.name[0].upper() }}
+        </div>
+      {% endif %}
+      <span class="text-sm text-slate-300 group-hover:text-white truncate">{{ agency.name }}</span>
+    </div>
+    <span class="text-xs font-medium tabular-nums {% if cfg_count > 0 %}text-cyan-400{% else %}text-slate-600{% endif %} flex-shrink-0 ml-2">
+      {{ cfg_count }}
+    </span>
+  </a>
+  {% endfor %}
+</div>
+{% else %}
+<div class="px-5 py-6 text-center text-slate-500 text-sm">No agencies found.</div>
+{% endif %}

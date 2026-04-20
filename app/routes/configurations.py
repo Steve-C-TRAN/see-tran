@@ -3,7 +3,7 @@ import csv
 from io import StringIO
 from flask import Blueprint, render_template, request, jsonify, Response
 from app import db
-from app.auth import login_required, get_updated_by
+from app.auth import login_required, admin_required, get_updated_by
 from app.utils.errors import api_ok, api_error, api_form_errors
 from app.models.tran import (
     Configuration, ConfigurationHistory, ConfigurationProduct,
@@ -124,7 +124,7 @@ def configuration_details(config_id):
     return render_template('fragments/configuration_details.html', c=c, warnings=warnings)
 
 @config_bp.route('/api/configurations', methods=['POST'])
-@login_required
+@admin_required
 def configuration_create():
     form = ConfigurationForm()
     if form.validate_on_submit():
@@ -139,7 +139,7 @@ def configuration_create():
     return api_form_errors(form)
 
 @config_bp.route('/api/configurations/<int:config_id>', methods=['POST'])
-@login_required
+@admin_required
 def configuration_update(config_id):
     c = Configuration.query.get_or_404(config_id)
     form = ConfigurationForm()
@@ -153,7 +153,7 @@ def configuration_update(config_id):
     return api_form_errors(form)
 
 @config_bp.route('/api/configurations/<int:config_id>', methods=['DELETE'])
-@login_required
+@admin_required
 def configuration_delete(config_id):
     c = Configuration.query.get_or_404(config_id)
     hist = ConfigurationHistory(configuration_id=c.id, action='deleted', changed_by=get_updated_by(), old_values={'id': c.id})
@@ -186,7 +186,7 @@ def configuration_product_form(config_id):
     return render_template('fragments/configuration_product_form.html', form=form, configuration=c)
 
 @config_bp.route('/api/configurations/<int:config_id>/products', methods=['POST'])
-@login_required
+@admin_required
 def configuration_product_create(config_id):
     c = Configuration.query.get_or_404(config_id)
     form = ConfigurationProductForm()
@@ -203,7 +203,7 @@ def configuration_product_create(config_id):
     return api_form_errors(form)
 
 @config_bp.route('/api/configuration-products/<int:cp_id>', methods=['POST'])
-@login_required
+@admin_required
 def configuration_product_update(cp_id):
     cp = ConfigurationProduct.query.get_or_404(cp_id)
     form = ConfigurationProductForm()
@@ -218,7 +218,7 @@ def configuration_product_update(cp_id):
     return api_form_errors(form)
 
 @config_bp.route('/api/configuration-products/<int:cp_id>', methods=['DELETE'])
-@login_required
+@admin_required
 def configuration_product_delete(cp_id):
     cp = ConfigurationProduct.query.get_or_404(cp_id)
     configuration_id = cp.configuration_id
@@ -285,7 +285,7 @@ def product_form():
     return render_template('fragments/product_form.html', form=form, vendors=vendors)
 
 @config_bp.route('/api/products', methods=['POST'])
-@login_required
+@admin_required
 def product_create():
     form = ProductForm()
     vendors = Vendor.query.order_by(Vendor.name.asc()).all()
@@ -317,7 +317,7 @@ def product_version_form(product_id):
     return render_template('fragments/product_version_form.html', form=form, product=p)
 
 @config_bp.route('/api/products/<int:product_id>/versions', methods=['POST'])
-@login_required
+@admin_required
 def product_version_create(product_id):
     p = Product.query.get_or_404(product_id)
     form = ProductVersionForm()
@@ -379,7 +379,7 @@ def wizard_config_step4():
     return render_template('fragments/wizard_config_step4.html', agency_id=agency_id, function_id=function_id, component_id=component_id, products=selected_products, product_ids=ids, warnings=warnings)
 
 @config_bp.route('/api/wizard/config/confirm', methods=['POST'])
-@login_required
+@admin_required
 def wizard_config_confirm():
     try:
         # Create configuration
@@ -418,7 +418,7 @@ def product_edit_form(product_id):
     return render_template('fragments/product_form.html', form=form, product=p, vendors=vendors)
 
 @config_bp.route('/api/products/<int:product_id>', methods=['PUT'])
-@login_required
+@admin_required
 def product_update(product_id):
     p = Product.query.get_or_404(product_id)
     form = ProductForm()
@@ -435,7 +435,7 @@ def product_update(product_id):
     return api_form_errors(form)
 
 @config_bp.route('/api/products/<int:product_id>', methods=['DELETE'])
-@login_required
+@admin_required
 def product_delete(product_id):
     p = Product.query.get_or_404(product_id)
     # Guard: block deletion if used in any configuration
@@ -522,7 +522,7 @@ def configurations_import_page():
 
 
 @config_bp.route('/api/configurations/import', methods=['POST'])
-@login_required
+@admin_required
 def configurations_import():
     """Process CSV import of product configurations."""
     agency_id = request.form.get('agency_id', type=int)

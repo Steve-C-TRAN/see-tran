@@ -10,23 +10,18 @@
     <div class="text-center">
       <h1 class="text-4xl md:text-6xl font-bold mb-6">
         <span class="bg-gradient-to-r from-blue-400 via-cyan-400 to-teal-400 bg-clip-text text-transparent">
-          Transit System
+          Transit Technology
         </span>
         <br>
-        <span class="text-white">Intelligence Platform</span>
+        <span class="text-white">Benchmarking Platform</span>
       </h1>
       <p class="text-xl text-slate-300 mb-8 max-w-3xl mx-auto">
-        Comprehensive visibility into public transit system infrastructure, vendor relationships, 
-        and system integrations in real-time.
+        An open platform for transit agencies to document their technology landscapes,
+        compare vendor choices, and benchmark system configurations across the industry.
       </p>
-      <div class="flex flex-col sm:flex-row justify-center gap-4">
-        <button hx-get="/api/health" hx-swap="innerHTML" hx-target="#health-demo" 
-                class="px-8 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-lg font-semibold 
-                       hover:from-blue-700 hover:to-cyan-700 transition-all glow-effect">
-          Test System Health
-        </button>
-        <a href="{{ url_for('main.docs_index') }}" class="px-8 py-3 border border-slate-600 rounded-lg font-semibold hover:bg-slate-800 transition-all inline-flex items-center justify-center">
-          View the Docs
+      <div class="flex justify-center">
+        <a href="{{ url_for('auth.login_page') }}" class="px-8 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-lg font-semibold hover:from-blue-700 hover:to-cyan-700 transition-all inline-flex items-center justify-center glow-effect">
+          Sign In to Explore
         </a>
       </div>
     </div>
@@ -35,216 +30,77 @@
 
 <!-- Dashboard Content -->
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-  
+
   <!-- Metrics Overview -->
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-    
+
     <!-- Transit Agency Card -->
-    <a href="{{ url_for('agency.index') }}" aria-label="View Agencies" class="block focus:outline-none focus:ring-2 focus:ring-cyan-500/50 rounded-xl">
-      <div class="metric-card rounded-xl p-6 border border-slate-700/50">
-        <div class="flex items-center justify-between mb-4">
-          <div class="w-10 h-10 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
-            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
-            </svg>
-          </div>
-          <span class="text-2xl font-bold text-white" hx-get="/api/count/agencies" hx-trigger="load">0</span>
+    <div class="metric-card rounded-xl p-6 border border-slate-700/50">
+      <div class="flex items-center justify-between mb-4">
+        <div class="w-10 h-10 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
+          <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
+          </svg>
         </div>
-        <h3 class="text-slate-400 text-sm font-medium mb-1">Transit Agencies</h3>
-        <p class="text-xs text-slate-500">Active transportation networks</p>
+        <span class="text-2xl font-bold text-white" hx-get="/api/count/agencies" hx-trigger="load">0</span>
       </div>
-    </a>
-
-    <!-- Vendors Card (renamed from Functional Areas) -->
-    <a href="{{ url_for('main.vendors_page') }}" aria-label="View Vendors" class="block focus:outline-none focus:ring-2 focus:ring-cyan-500/50 rounded-xl">
-      <div class="metric-card rounded-xl p-6 border border-slate-700/50">
-        <div class="flex items-center justify-between mb-4">
-          <div class="w-10 h-10 bg-gradient-to-r from-purple-500 to-purple-600 rounded-lg flex items-center justify-center flex-shrink-0">
-            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd" d="M3 3a1 1 0 000 2v8a2 2 0 002 2h2.586l-1.293 1.293a1 1 0 101.414 1.414L10 15.414l2.293 2.293a1 1 0 001.414-1.414L12.414 15H15a2 2 0 002-2V5a1 1 0 100-2H3zm11.707 4.707a1 1 0 00-1.414-1.414L10 9.586 8.707 8.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-            </svg>
-          </div>
-          <span class="text-2xl font-bold text-white" hx-get="/api/count/vendors" hx-trigger="load">0</span>
-        </div>
-        <h3 class="text-slate-400 text-sm font-medium mb-1">Vendors</h3>
-        <p class="text-xs text-slate-500">Operational domains</p>
-      </div>
-    </a>
-
-    <!-- Active Components Card -->
-    <a href="{{ url_for('main.components_page') }}" aria-label="View Components" class="block focus:outline-none focus:ring-2 focus:ring-cyan-500/50 rounded-xl">
-      <div class="metric-card rounded-xl p-6 border border-slate-700/50">
-        <div class="flex items-center justify-between mb-4">
-          <div class="w-10 h-10 bg-gradient-to-r from-green-500 to-green-600 rounded-lg flex items-center justify-center flex-shrink-0">
-            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z" clip-rule="evenodd"/>
-            </svg>
-          </div>
-          <span class="text-2xl font-bold text-white" hx-get="/api/count/components" hx-trigger="load">0</span>
-        </div>
-        <h3 class="text-slate-400 text-sm font-medium mb-1">Active Components</h3>
-        <p class="text-xs text-slate-500">Deployed technology components</p>
-      </div>
-    </a>
-
-    <!-- Products Card (renamed from Integration Points) -->
-    <a href="{{ url_for('configurations.products_page') }}" aria-label="View Products" class="block focus:outline-none focus:ring-2 focus:ring-cyan-500/50 rounded-xl">
-      <div class="metric-card rounded-xl p-6 border border-slate-700/50">
-        <div class="flex items-center justify-between mb-4">
-          <div class="w-10 h-10 bg-gradient-to-r from-cyan-500 to-cyan-600 rounded-lg flex items-center justify-center flex-shrink-0">
-            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z"/>
-            </svg>
-          </div>
-          <span class="text-2xl font-bold text-white" hx-get="/api/count/products" hx-trigger="load">0</span>
-        </div>
-        <h3 class="text-slate-400 text-sm font-medium mb-1">Products</h3>
-        <p class="text-xs text-slate-500">System interconnections</p>
-      </div>
-    </a>
-  </div>
-
-  <!-- Main Content Area -->
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-    
-    <!-- System Status Panel -->
-    <div class="lg:col-span-2">
-      <div class="glass-effect rounded-xl p-6 border border-slate-700/50">
-        <div class="flex items-center justify-between mb-6">
-          <h2 class="text-xl font-semibold text-white">System Status</h2>
-          <div class="flex items-center space-x-2">
-            <div class="w-2 h-2 bg-green-500 rounded-full"></div>
-            <span class="text-sm text-slate-300">All Systems Operational</span>
-          </div>
-        </div>
-        
-        <!-- Demo System Status -->
-        <div class="space-y-4">
-          <div class="flex items-center justify-between p-4 bg-slate-800/50 rounded-lg border border-slate-700/30">
-            <div class="flex items-center space-x-4">
-              <div class="w-3 h-3 bg-green-500 rounded-full"></div>
-              <div>
-                <h4 class="font-medium text-white">Database Connection</h4>
-                <p class="text-sm text-slate-400">SQLite • Local Development</p>
-              </div>
-            </div>
-            <div class="text-right">
-              <p class="text-sm text-green-400">Online</p>
-              <p class="text-xs text-slate-500">Response: 2ms</p>
-            </div>
-          </div>
-
-          <div class="flex items-center justify-between p-4 bg-slate-800/50 rounded-lg border border-slate-700/30">
-            <div class="flex items-center space-x-4">
-              <div class="w-3 h-3 bg-green-500 rounded-full"></div>
-              <div>
-                <h4 class="font-medium text-white">Web Server</h4>
-                <p class="text-sm text-slate-400">Flask Development Server</p>
-              </div>
-            </div>
-            <div class="text-right">
-              <p class="text-sm text-green-400">Online</p>
-              <p class="text-xs text-slate-500">Port: 5000</p>
-            </div>
-          </div>
-
-          <div class="flex items-center justify-between p-4 bg-slate-800/50 rounded-lg border border-slate-700/30">
-            <div class="flex items-center space-x-4">
-              <div class="w-3 h-3 bg-green-500 rounded-full"></div>
-              <div>
-                <h4 class="font-medium text-white">HTMX Integration</h4>
-                <p class="text-sm text-slate-400">Dynamic UI Updates</p>
-              </div>
-            </div>
-            <div class="text-right">
-              <p class="text-sm text-green-400">Active</p>
-              <p class="text-xs text-slate-500">v2.0.4</p>
-            </div>
-          </div>
-        </div>
-      </div>
+      <h3 class="text-slate-400 text-sm font-medium mb-1">Transit Agencies</h3>
+      <p class="text-xs text-slate-500">Active transportation networks</p>
     </div>
 
-    <!-- Sidebar -->
-    <div class="space-y-6">
-      
-      <!-- System Health Demo -->
-      <div class="glass-effect rounded-xl p-6 border border-slate-700/50">
-        <h3 class="text-lg font-semibold text-white mb-4">System Health</h3>
-        <div id="health-demo" class="text-center">
-          <div class="w-16 h-16 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-            </svg>
-          </div>
-          <h4 class="text-lg font-semibold text-white mb-2">Excellent</h4>
-          <p class="text-sm text-slate-400">All systems functioning normally</p>
+    <!-- Vendors Card -->
+    <div class="metric-card rounded-xl p-6 border border-slate-700/50">
+      <div class="flex items-center justify-between mb-4">
+        <div class="w-10 h-10 bg-gradient-to-r from-purple-500 to-purple-600 rounded-lg flex items-center justify-center flex-shrink-0">
+          <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M3 3a1 1 0 000 2v8a2 2 0 002 2h2.586l-1.293 1.293a1 1 0 101.414 1.414L10 15.414l2.293 2.293a1 1 0 001.414-1.414L12.414 15H15a2 2 0 002-2V5a1 1 0 100-2H3zm11.707 4.707a1 1 0 00-1.414-1.414L10 9.586 8.707 8.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+          </svg>
         </div>
+        <span class="text-2xl font-bold text-white" hx-get="/api/count/vendors" hx-trigger="load">0</span>
       </div>
+      <h3 class="text-slate-400 text-sm font-medium mb-1">Vendors</h3>
+      <p class="text-xs text-slate-500">Technology vendors tracked</p>
+    </div>
 
-      <!-- Getting Started -->
-      <div class="glass-effect rounded-xl p-6 border border-slate-700/50">
-        <h3 class="text-lg font-semibold text-white mb-4">Getting Started</h3>
-        <div class="space-y-3">
-          <div class="flex items-center space-x-3 p-3 bg-slate-800/30 rounded-lg">
-            <div class="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
-              <span class="text-xs font-bold text-white">1</span>
-            </div>
-            <p class="text-sm text-slate-300">Add your first transit agency</p>
-          </div>
-          <div class="flex items-center space-x-3 p-3 bg-slate-800/30 rounded-lg">
-            <div class="w-6 h-6 bg-purple-500 rounded-full flex items-center justify-center flex-shrink-0">
-              <span class="text-xs font-bold text-white">2</span>
-            </div>
-            <p class="text-sm text-slate-300">Define functional areas</p>
-          </div>
-          <div class="flex items-center space-x-3 p-3 bg-slate-800/30 rounded-lg">
-            <div class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
-              <span class="text-xs font-bold text-white">3</span>
-            </div>
-            <p class="text-sm text-slate-300">Configure system integration</p>
-          </div>
+    <!-- Active Components Card -->
+    <div class="metric-card rounded-xl p-6 border border-slate-700/50">
+      <div class="flex items-center justify-between mb-4">
+        <div class="w-10 h-10 bg-gradient-to-r from-green-500 to-green-600 rounded-lg flex items-center justify-center flex-shrink-0">
+          <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z" clip-rule="evenodd"/>
+          </svg>
         </div>
+        <span class="text-2xl font-bold text-white" hx-get="/api/count/components" hx-trigger="load">0</span>
       </div>
+      <h3 class="text-slate-400 text-sm font-medium mb-1">Components</h3>
+      <p class="text-xs text-slate-500">Catalogued system components</p>
+    </div>
 
-      <!-- Quick Actions -->
-      <div class="glass-effect rounded-xl p-6 border border-slate-700/50">
-        <h3 class="text-lg font-semibold text-white mb-4">Quick Actions</h3>
-        <div class="space-y-3">
-          <button class="w-full px-4 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-lg text-sm font-medium hover:from-blue-700 hover:to-cyan-700 transition-all">
-            <svg class="w-4 h-4 inline mr-2" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"/>
-            </svg>
-            Add Transit Agency
-          </button>
-          <button class="w-full px-4 py-3 bg-slate-800 hover:bg-slate-700 rounded-lg text-sm font-medium transition-colors">
-            <svg class="w-4 h-4 inline mr-2" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
-              <path fill-rule="evenodd" d="M4 5a2 2 0 012-2v1a2 2 0 00-2 2v6a2 2 0 002 2h8a2 2 0 002-2V6a2 2 0 00-2-2V3a2 2 0 012 2v8a4 4 0 01-4 4H6a4 4 0 01-4-4V5z" clip-rule="evenodd"/>
-            </svg>
-            Generate Report
-          </button>
-          <button class="w-full px-4 py-3 bg-slate-800 hover:bg-slate-700 rounded-lg text-sm font-medium transition-colors">
-            <svg class="w-4 h-4 inline mr-2" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd"/>
-            </svg>
-            Export Data
-          </button>
+    <!-- Products Card -->
+    <div class="metric-card rounded-xl p-6 border border-slate-700/50">
+      <div class="flex items-center justify-between mb-4">
+        <div class="w-10 h-10 bg-gradient-to-r from-cyan-500 to-cyan-600 rounded-lg flex items-center justify-center flex-shrink-0">
+          <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z"/>
+          </svg>
         </div>
+        <span class="text-2xl font-bold text-white" hx-get="/api/count/products" hx-trigger="load">0</span>
       </div>
+      <h3 class="text-slate-400 text-sm font-medium mb-1">Products</h3>
+      <p class="text-xs text-slate-500">Vendor products catalogued</p>
     </div>
   </div>
 
   <!-- Information Cards -->
-  <div class="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
     <div class="glass-effect rounded-xl p-6 border border-slate-700/50">
       <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg flex items-center justify-center mb-4">
         <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
           <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
         </svg>
       </div>
-      <h3 class="text-lg font-semibold text-white mb-2">System Tracking</h3>
-      <p class="text-slate-400 text-sm">Monitor all your transit technology components, versions, and deployment status in one centralized dashboard.</p>
+      <h3 class="text-lg font-semibold text-white mb-2">Agency Benchmarking</h3>
+      <p class="text-slate-400 text-sm">Document and compare technology configurations across transit agencies to identify trends and best practices.</p>
     </div>
 
     <div class="glass-effect rounded-xl p-6 border border-slate-700/50">
@@ -253,8 +109,8 @@
           <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z"/>
         </svg>
       </div>
-      <h3 class="text-lg font-semibold text-white mb-2">Vendor Management</h3>
-      <p class="text-slate-400 text-sm">Track vendor relationships, contact information, and system dependencies across your entire transit network.</p>
+      <h3 class="text-lg font-semibold text-white mb-2">Vendor Landscape</h3>
+      <p class="text-slate-400 text-sm">Understand which vendors and products are deployed across the industry, and how agencies have adopted them.</p>
     </div>
 
     <div class="glass-effect rounded-xl p-6 border border-slate-700/50">
@@ -264,32 +120,9 @@
         </svg>
       </div>
       <h3 class="text-lg font-semibold text-white mb-2">Integration Mapping</h3>
-      <p class="text-slate-400 text-sm">Visualize system integrations, data flows, and interconnections to understand your technology ecosystem.</p>
+      <p class="text-slate-400 text-sm">Explore system integration points and standards to understand how transit technology ecosystems connect.</p>
     </div>
   </div>
 </div>
 
-{% endblock %}
-
-{% block scripts %}
-<script>
-// Auto-refresh metrics every 30 seconds
-setInterval(function() {
-  const elements = document.querySelectorAll('[hx-get*="/api/count/"]');
-  elements.forEach(el => htmx.trigger(el, 'refresh'));
-}, 30000);
-
-// Add smooth animations for loaded content
-document.body.addEventListener('htmx:afterSwap', function(e) {
-  const newContent = e.detail.target;
-  newContent.style.opacity = '0';
-  newContent.style.transform = 'translateY(10px)';
-  
-  setTimeout(() => {
-    newContent.style.transition = 'all 0.3s ease';
-    newContent.style.opacity = '1';
-    newContent.style.transform = 'translateY(0)';
-  }, 50);
-});
-</script>
 {% endblock %}

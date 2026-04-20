@@ -1,0 +1,211 @@
+<!-- app/templates/dashboard.html -->
+{% extends "base.html" %}
+{% block content %}
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+  <!-- Page Header -->
+  <div class="mb-8">
+    <h1 class="text-2xl font-bold text-white">Dashboard</h1>
+    <p class="text-slate-400 text-sm mt-1">
+      Welcome back{% if user.get('name') %}, {{ user['name'].split()[0] }}{% endif %}.
+      Here's what's in the database.
+    </p>
+  </div>
+
+  <!-- Metric Cards -->
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+
+    <a href="/agencies" class="metric-card rounded-xl p-5 border border-slate-700/50 block hover:border-blue-500/40 transition-colors">
+      <div class="flex items-center justify-between mb-3">
+        <div class="w-9 h-9 bg-blue-500/20 rounded-lg flex items-center justify-center">
+          <svg class="w-4 h-4 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
+          </svg>
+        </div>
+        <span class="text-2xl font-bold text-white tabular-nums"
+              hx-get="/api/count/agencies" hx-trigger="load">—</span>
+      </div>
+      <p class="text-slate-400 text-xs font-medium uppercase tracking-wide">Agencies</p>
+    </a>
+
+    <a href="/configurations" class="metric-card rounded-xl p-5 border border-slate-700/50 block hover:border-cyan-500/40 transition-colors">
+      <div class="flex items-center justify-between mb-3">
+        <div class="w-9 h-9 bg-cyan-500/20 rounded-lg flex items-center justify-center">
+          <svg class="w-4 h-4 text-cyan-400" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M3 3a1 1 0 000 2v8a2 2 0 002 2h2.586l-1.293 1.293a1 1 0 101.414 1.414L10 15.414l2.293 2.293a1 1 0 001.414-1.414L12.414 15H15a2 2 0 002-2V5a1 1 0 100-2H3zm11.707 4.707a1 1 0 00-1.414-1.414L10 9.586 8.707 8.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+          </svg>
+        </div>
+        <span class="text-2xl font-bold text-white tabular-nums"
+              hx-get="/api/count/configurations" hx-trigger="load">—</span>
+      </div>
+      <p class="text-slate-400 text-xs font-medium uppercase tracking-wide">Configurations</p>
+    </a>
+
+    <a href="/vendors" class="metric-card rounded-xl p-5 border border-slate-700/50 block hover:border-purple-500/40 transition-colors">
+      <div class="flex items-center justify-between mb-3">
+        <div class="w-9 h-9 bg-purple-500/20 rounded-lg flex items-center justify-center">
+          <svg class="w-4 h-4 text-purple-400" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z"/>
+          </svg>
+        </div>
+        <span class="text-2xl font-bold text-white tabular-nums"
+              hx-get="/api/count/vendors" hx-trigger="load">—</span>
+      </div>
+      <p class="text-slate-400 text-xs font-medium uppercase tracking-wide">Vendors</p>
+    </a>
+
+    <a href="/products" class="metric-card rounded-xl p-5 border border-slate-700/50 block hover:border-green-500/40 transition-colors">
+      <div class="flex items-center justify-between mb-3">
+        <div class="w-9 h-9 bg-green-500/20 rounded-lg flex items-center justify-center">
+          <svg class="w-4 h-4 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z" clip-rule="evenodd"/>
+          </svg>
+        </div>
+        <span class="text-2xl font-bold text-white tabular-nums"
+              hx-get="/api/count/products" hx-trigger="load">—</span>
+      </div>
+      <p class="text-slate-400 text-xs font-medium uppercase tracking-wide">Products</p>
+    </a>
+  </div>
+
+  <!-- Secondary stats row -->
+  <div class="grid grid-cols-3 gap-4 mb-8">
+    <div class="glass-effect rounded-xl p-4 border border-slate-700/50 text-center">
+      <span class="text-xl font-bold text-white tabular-nums block"
+            hx-get="/api/count/components" hx-trigger="load">—</span>
+      <p class="text-slate-400 text-xs mt-1">Components</p>
+    </div>
+    <div class="glass-effect rounded-xl p-4 border border-slate-700/50 text-center">
+      <span class="text-xl font-bold text-white tabular-nums block"
+            hx-get="/api/count/functional-areas" hx-trigger="load">—</span>
+      <p class="text-slate-400 text-xs mt-1">Functional Areas</p>
+    </div>
+    <div class="glass-effect rounded-xl p-4 border border-slate-700/50 text-center">
+      <span class="text-xl font-bold text-white tabular-nums block"
+            hx-get="/api/count/integration-points" hx-trigger="load">—</span>
+      <p class="text-slate-400 text-xs mt-1">Integration Points</p>
+    </div>
+  </div>
+
+  <!-- Main two-column layout -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+    <!-- Left: Recent Configurations (2/3) -->
+    <div class="lg:col-span-2">
+      <div class="glass-effect rounded-xl border border-slate-700/50">
+        <div class="flex items-center justify-between px-6 py-4 border-b border-slate-700/50">
+          <h2 class="text-sm font-semibold text-white uppercase tracking-wide">Recent Configurations</h2>
+          <a href="/configurations" class="text-xs text-blue-400 hover:text-blue-300 transition-colors">View all →</a>
+        </div>
+        <div id="recent-configs-list"
+             hx-get="/api/dashboard/recent-configs"
+             hx-trigger="load"
+             class="divide-y divide-slate-700/40">
+          <!-- Loading state -->
+          <div class="px-6 py-8 text-center text-slate-500 text-sm">Loading…</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Top Agencies + Insights (1/3) -->
+    <div class="space-y-5">
+
+      <!-- Top Agencies by Config Count -->
+      <div class="glass-effect rounded-xl border border-slate-700/50">
+        <div class="flex items-center justify-between px-5 py-4 border-b border-slate-700/50">
+          <h2 class="text-sm font-semibold text-white uppercase tracking-wide">Agencies by Coverage</h2>
+          <a href="/agencies" class="text-xs text-blue-400 hover:text-blue-300 transition-colors">All →</a>
+        </div>
+        <div id="top-agencies-list"
+             hx-get="/api/dashboard/top-agencies"
+             hx-trigger="load">
+          <div class="px-5 py-6 text-center text-slate-500 text-sm">Loading…</div>
+        </div>
+      </div>
+
+      <!-- Platform Insights -->
+      <div class="glass-effect rounded-xl border border-slate-700/50">
+        <div class="px-5 py-4 border-b border-slate-700/50">
+          <h2 class="text-sm font-semibold text-white uppercase tracking-wide">Insights</h2>
+        </div>
+        <div id="insights-panel"
+             hx-get="/api/agencies/insights"
+             hx-trigger="load"
+             hx-swap="innerHTML">
+          <div class="px-5 py-6 text-center text-slate-500 text-sm">Loading…</div>
+        </div>
+      </div>
+
+      <!-- Quick Nav -->
+      <div class="glass-effect rounded-xl border border-slate-700/50 p-5">
+        <h2 class="text-sm font-semibold text-white uppercase tracking-wide mb-4">Explore</h2>
+        <nav class="space-y-1">
+          <a href="/agencies" class="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-slate-700/50 transition-colors group">
+            <span class="text-sm text-slate-300 group-hover:text-white">Agencies</span>
+            <svg class="w-4 h-4 text-slate-500 group-hover:text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+          </a>
+          <a href="/configurations" class="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-slate-700/50 transition-colors group">
+            <span class="text-sm text-slate-300 group-hover:text-white">Configurations</span>
+            <svg class="w-4 h-4 text-slate-500 group-hover:text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+          </a>
+          <a href="/vendors" class="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-slate-700/50 transition-colors group">
+            <span class="text-sm text-slate-300 group-hover:text-white">Vendors</span>
+            <svg class="w-4 h-4 text-slate-500 group-hover:text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+          </a>
+          <a href="/components" class="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-slate-700/50 transition-colors group">
+            <span class="text-sm text-slate-300 group-hover:text-white">Components</span>
+            <svg class="w-4 h-4 text-slate-500 group-hover:text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+          </a>
+          <a href="/functional-areas" class="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-slate-700/50 transition-colors group">
+            <span class="text-sm text-slate-300 group-hover:text-white">Functional Areas</span>
+            <svg class="w-4 h-4 text-slate-500 group-hover:text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+          </a>
+          <a href="/products" class="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-slate-700/50 transition-colors group">
+            <span class="text-sm text-slate-300 group-hover:text-white">Products</span>
+            <svg class="w-4 h-4 text-slate-500 group-hover:text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+          </a>
+          <a href="/integrations" class="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-slate-700/50 transition-colors group">
+            <span class="text-sm text-slate-300 group-hover:text-white">Integrations</span>
+            <svg class="w-4 h-4 text-slate-500 group-hover:text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+          </a>
+        </nav>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+// After insights load (JSON), render them into the panel
+document.body.addEventListener('htmx:afterRequest', function(e) {
+  if (e.detail.pathInfo && e.detail.pathInfo.requestPath === '/api/agencies/insights') {
+    try {
+      const data = JSON.parse(e.detail.xhr.responseText);
+      if (!data.ok) return;
+      const d = data.data;
+      const panel = document.getElementById('insights-panel');
+      if (!panel) return;
+      panel.innerHTML = `
+        <div class="divide-y divide-slate-700/40">
+          <div class="px-5 py-3 flex items-center justify-between">
+            <span class="text-xs text-slate-400">Tech Leader</span>
+            <span class="text-xs font-medium text-white truncate ml-3 text-right max-w-[55%]">${d.tech_leader || '—'}</span>
+          </div>
+          <div class="px-5 py-3 flex items-center justify-between">
+            <span class="text-xs text-slate-400">Top Area</span>
+            <span class="text-xs font-medium text-white truncate ml-3 text-right max-w-[55%]">${d.common_area || '—'}</span>
+          </div>
+          <div class="px-5 py-3 flex items-center justify-between">
+            <span class="text-xs text-slate-400">Top Vendor</span>
+            <span class="text-xs font-medium text-white truncate ml-3 text-right max-w-[55%]">${d.top_vendor || '—'}</span>
+          </div>
+        </div>`;
+    } catch(err) {}
+  }
+});
+</script>
+{% endblock %}

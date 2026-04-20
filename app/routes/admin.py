@@ -37,7 +37,7 @@ def agency_agent_page():
 
 
 @admin_bp.route('/api/agents/agency/run', methods=['POST'])
-@login_required
+@admin_required
 def run_agency_agent():
     """Execute the agency agent."""
     data = request.get_json() or {}
@@ -91,7 +91,7 @@ def run_agency_agent():
 
 
 @admin_bp.route('/api/agents/agency/commit', methods=['POST'])
-@login_required
+@admin_required
 def commit_agency_agent():
     """
     Commit the agent's proposed changes to the database.

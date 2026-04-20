@@ -8,7 +8,7 @@ from app.models.tran import (
     Configuration, ConfigurationProduct, Product, ProductVersion
 )
 from app.forms.forms import AgencyForm, VendorForm, ComponentForm
-from app.auth import login_required, get_updated_by
+from app.auth import login_required, admin_required, get_updated_by
 from app.utils.errors import (
     api_ok,
     json_error_response, json_success_response,
@@ -27,7 +27,17 @@ main = Blueprint("main", __name__)
 
 @main.route("/")
 def index():
+    from flask import session
+    if session.get('user'):
+        return redirect(url_for('main.dashboard'))
     return render_template("index.html")
+
+
+@main.route("/dashboard")
+def dashboard():
+    from flask import session
+    user = session.get('user', {})
+    return render_template("dashboard.html", user=user)
 
 # --- Basic pages ---
 @main.route("/functional-areas")
@@ -369,7 +379,7 @@ def functional_area_edit_form(area_id):
         return html_error_fragment(f"Error loading edit form: {str(e)}")
 
 @main.route('/api/functional-areas', methods=['POST'])
-@login_required
+@admin_required
 def functional_area_create():
     try:
         name = (request.form.get('name') or '').strip()
@@ -385,7 +395,7 @@ def functional_area_create():
         return html_error_fragment(f"Error creating functional area: {str(e)}")
 
 @main.route('/api/functional-areas/<int:area_id>', methods=['PUT'])
-@login_required
+@admin_required
 def functional_area_update(area_id):
     try:
         area = FunctionalArea.query.get_or_404(area_id)
@@ -402,7 +412,7 @@ def functional_area_update(area_id):
         return html_error_fragment(f"Error updating functional area: {str(e)}")
 
 @main.route('/api/functional-areas/<int:area_id>', methods=['DELETE'])
-@login_required
+@admin_required
 def functional_area_delete(area_id):
     try:
         area = FunctionalArea.query.get_or_404(area_id)
@@ -467,6 +477,47 @@ def count_products():
         return str(Product.query.count())
     except Exception:
         return "0"
+
+
+# Dashboard endpoints
+
+@main.route("/api/dashboard/recent-configs")
+def dashboard_recent_configs():
+    """HTMX fragment: last 10 configurations for the dashboard activity feed."""
+    try:
+        configs = (
+            Configuration.query
+            .options(
+                joinedload(Configuration.agency),
+                joinedload(Configuration.function).joinedload(Function.functional_area),
+                joinedload(Configuration.component),
+                joinedload(Configuration.products).joinedload(ConfigurationProduct.product).joinedload(Product.vendor),
+            )
+            .order_by(Configuration.created_at.desc())
+            .limit(10)
+            .all()
+        )
+        return render_template('fragments/dashboard_recent_configs.html', configs=configs)
+    except Exception as e:
+        return html_error_fragment(f"Error loading recent configurations: {str(e)}")
+
+
+@main.route("/api/dashboard/top-agencies")
+def dashboard_top_agencies():
+    """HTMX fragment: agencies ranked by configuration count."""
+    try:
+        rows = (
+            db.session.query(Agency, func.count(Configuration.id).label('cfg_count'))
+            .outerjoin(Configuration, Configuration.agency_id == Agency.id)
+            .group_by(Agency.id)
+            .order_by(func.count(Configuration.id).desc())
+            .limit(8)
+            .all()
+        )
+        return render_template('fragments/dashboard_top_agencies.html', rows=rows)
+    except Exception as e:
+        return html_error_fragment(f"Error loading top agencies: {str(e)}")
+
 
 # Components endpoints
 @main.route("/api/components/list")
@@ -667,7 +718,7 @@ def component_edit_form(component_id):
 
 # NEW: Component create/update/delete endpoints
 @main.route("/api/components", methods=['POST'])
-@login_required
+@admin_required
 def component_create():
     form = ComponentForm()
     if form.validate_on_submit():
@@ -686,7 +737,7 @@ def component_create():
     return json_form_error_response(form)
 
 @main.route("/api/components/<int:component_id>", methods=['POST'])
-@login_required
+@admin_required
 def component_update(component_id):
     component = Component.query.get_or_404(component_id)
     form = ComponentForm()
@@ -701,7 +752,7 @@ def component_update(component_id):
     return json_form_error_response(form)
 
 @main.route("/api/components/<int:component_id>", methods=['DELETE'])
-@login_required
+@admin_required
 def component_delete(component_id):
     try:
         component = Component.query.get_or_404(component_id)
@@ -849,7 +900,7 @@ def vendor_edit_form(vendor_id):
 
 # -------- VENDOR DELETE (guard on product & usage) ----------
 @main.route("/api/vendors/<int:vendor_id>", methods=['DELETE'])
-@login_required
+@admin_required
 def delete_vendor(vendor_id):
     try:
         vendor = Vendor.query.get_or_404(vendor_id)
@@ -1050,6 +1101,7 @@ def agency_edit_form_fragment(agency_id):
         return html_error_fragment(f"Error loading agency edit form: {str(e)}")
 
 @main.route('/agencies/<int:agency_id>/update', methods=['POST'])
+@admin_required
 def update_agency(agency_id):
     """Handle agency edit form submission (non-AJAX)."""
     agency = Agency.query.get_or_404(agency_id)
@@ -1067,7 +1119,7 @@ def update_agency(agency_id):
     return render_template('fragments/agency_form.html', form=form, agency=agency)
 
 @main.route("/api/vendors", methods=['POST'])
-@login_required
+@admin_required
 def create_vendor():
     """Create a new vendor (JSON response for HTMX form)."""
     form = VendorForm()
@@ -1088,7 +1140,7 @@ def create_vendor():
 
 
 @main.route("/api/vendors/<int:vendor_id>", methods=['POST'])
-@login_required
+@admin_required
 def update_vendor(vendor_id):
     """Update an existing vendor (JSON response for HTMX form)."""
     vendor = Vendor.query.get_or_404(vendor_id)

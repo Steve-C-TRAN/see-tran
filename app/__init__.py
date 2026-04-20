@@ -64,4 +64,17 @@ def create_app(test_config=None):
     from app.routes.api_v1 import api_v1
     app.register_blueprint(api_v1)
 
+    # Require login for all routes except the public whitelist
+    @app.before_request
+    def require_login():
+        from flask import request, session, redirect, url_for, jsonify
+        PUBLIC_PATHS = {'/', '/logout', '/registration-required'}
+        PUBLIC_PREFIXES = ('/login', '/auth/', '/static/', '/api/count/', '/api/v1/')
+        if request.path in PUBLIC_PATHS or request.path.startswith(PUBLIC_PREFIXES):
+            return
+        if 'user' not in session:
+            if request.path.startswith('/api/'):
+                return jsonify({'error': 'Authentication required'}), 401
+            return redirect(url_for('auth.login_page', next=request.url))
+
     return app
